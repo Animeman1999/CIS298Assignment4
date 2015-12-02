@@ -15,4 +15,14 @@
     <string name="beverage_pack_hint">Item Pack</string>
     <string name="beverage_price_hint">Item Price</string>
 
+    <string name="select_contact">SELECT CONTACT</string>
+    <string name="send_beverage_details">SEND BEVERAGE DETAILS</string>
+
+    <string name="from_email">From </string>
+    <string name="to_email">To </string>
+
+    <string name="subject_hint">Subject</string>
+    <string name="message_hint">Message</string>
+
+
 </resources>

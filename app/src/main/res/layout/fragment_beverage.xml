@@ -112,7 +112,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:padding="4dp" />
-
         </LinearLayout>
 
+    <Button
+        android:id="@+id/seclect_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/select_contact"/>
+    <Button
+        android:id="@+id/send_beverage_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send_beverage_details"/>
 </LinearLayout>
