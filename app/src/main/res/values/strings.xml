@@ -21,6 +21,7 @@
     <string name="from_email">From </string>
     <string name="to_email">To </string>
 
+    <string name="beverage_item_information_hint">Bverage App Item Information</string>
     <string name="subject_hint">Subject</string>
     <string name="message_hint">Message</string>
 

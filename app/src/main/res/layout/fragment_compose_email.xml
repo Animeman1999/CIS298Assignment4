@@ -9,4 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/from_email" />
+    <EditText
+        android:id="@+id/to_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/to_email"/>
+    <EditText
+        android:id="@+id/beverage_item_information"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/beverage_item_information_hint"/>
+    <EditText
+        android:id="@+id/body_of_email"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>
