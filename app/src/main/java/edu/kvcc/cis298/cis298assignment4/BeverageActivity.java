@@ -14,6 +14,7 @@ public class BeverageActivity extends SingleFragmentActivity {
     public static Intent newIntent(Context context, String id) {
         Intent intent = new Intent(context, BeverageActivity.class);
         intent.putExtra(EXTRA_BEVERAGE_ID, id);
+
         return intent;
     }
 
