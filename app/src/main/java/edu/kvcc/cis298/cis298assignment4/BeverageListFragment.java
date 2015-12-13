@@ -1,11 +1,13 @@
 package edu.kvcc.cis298.cis298assignment4;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,14 @@ public class BeverageListFragment extends Fragment {
     //Private variables for the recycler view and the required adapter
     private RecyclerView mBeverageRecyclerView;
     private BeverageAdapter mBeverageAdapter;
+    private static final String TAG = "Beverage";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "about to  BeverageFetcher().fetchBeverages()");
+        new BeverageFetcher().fetchBeverages();
+    }
 
     @Nullable
     @Override
@@ -150,5 +160,14 @@ public class BeverageListFragment extends Fragment {
         public int getItemCount() {
             return mBeverages.size();
         }
+    }
+    private class FetchBeveragesTask extends AsyncTask<Void,View, List<Beverage>>{
+        @Override
+        protected List<Beverage> doInBackground(Void... params) {
+            Log.d(TAG, "about to return new BeverageFetcher().fetchBeverages();");
+            return new BeverageFetcher().fetchBeverages();
+        }
+
+
     }
 }
