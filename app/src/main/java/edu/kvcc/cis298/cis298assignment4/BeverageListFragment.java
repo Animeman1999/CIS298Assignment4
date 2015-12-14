@@ -30,7 +30,7 @@ public class BeverageListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "about to  BeverageFetcher().fetchBeverages()");
-        new BeverageFetcher().fetchBeverages();
+        new FetchBeveragesTask().execute();
     }
 
     @Nullable

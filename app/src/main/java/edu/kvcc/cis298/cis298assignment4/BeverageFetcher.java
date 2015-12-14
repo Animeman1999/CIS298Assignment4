@@ -50,7 +50,7 @@ public class BeverageFetcher {
             byte[] buffer = new byte[1024]; //Array to act as a buffer that will read in up to 1024 bytes at a time
             Log.d(TAG, "Inside BeverageFetcher.java inside private byte, after creating new byte buffer");
 
-            while ((bytesRead = in.read())>0) {//Loop while we can read bytes from the input stream
+            while ((bytesRead = in.read(buffer))>0) {//Loop while we can read bytes from the input stream
 
                 out.write(buffer, 0, bytesRead); //Write the bytes out to the output stram
             }
