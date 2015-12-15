@@ -1,13 +1,19 @@
 package edu.kvcc.cis298.cis298assignment4;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -26,6 +32,10 @@ public class BeverageFragment extends Fragment {
     private EditText mPack;
     private EditText mPrice;
     private CheckBox mActive;
+    private Button mContactButton;
+    private Button mSendDetailsButton;
+    private static final int REQUEST_CONTACT = 1;  //constant request code needed when getting the result of the select contact intent.
+    private String mContactName;
 
     //Private var for storing the beverage that will be displayed with this fragment
     private Beverage mBeverage;
@@ -151,7 +161,59 @@ public class BeverageFragment extends Fragment {
             }
         });
 
+
+
+        // Create a constant intent to use for picking a contact from the contact contract.
+        final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        mContactButton = (Button) view.findViewById(R.id.seclect_contact);
+
+        mContactButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(pickContact,REQUEST_CONTACT);
+
+            }
+        });
+
+
+
+        PackageManager packageManager = getActivity().getPackageManager();
+        if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null){
+            mContactButton.setEnabled(false);
+        }
+
+        mContactButton = (Button) view.findViewById(R.id.send_beverage_details);
+
+        mContactButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_TEXT, getBeverageReport());
+                i.putExtra(Intent.EXTRA_SUBJECT, "Beverage App Item Information");
+
+                i = Intent.createChooser(i,"Send Beverage Data via");
+                startActivity(i);
+            }
+        });
+
+
         //Lastley return the view with all of this stuff attached and set on it.
         return view;
+
+    }
+
+    private String getBeverageReport(){
+        String contact = "How do  you get the name.\n\n";
+        String isActiveString;
+        if (mBeverage.isActive()){
+            isActiveString = "Currently Active";
+        }else {
+            isActiveString = "Currently Inactive";
+        }
+        String report =  contact + "Please Review the Following Beverage.\n\n" + mBeverage.getId()+ "\n"
+                + mBeverage.getName() + "\n" + mBeverage.getPack() + "\n" + mBeverage.getPrice() + "\n" + isActiveString;
+
+        return report;
     }
 }
