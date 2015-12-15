@@ -40,7 +40,11 @@ public class BeverageCollection {
         //Set the context to the one that is passed in
         mContext = context;
         //Call the private method to load the beverage list
-        loadBeverageList();
+      //  loadBeverageList();
+    }
+
+    public void setBeverageCollection(List<Beverage>beverages){
+        mBeverages = beverages;
     }
 
     //Getters

@@ -69,15 +69,30 @@ public class BeverageListFragment extends Fragment {
 
         //If there is no adapter, make a new one and send it in the list of beverages
         if (mBeverageAdapter == null) {
-            mBeverageAdapter = new BeverageAdapter(beverages);
+           /* mBeverageAdapter = new BeverageAdapter(beverages);
             //set the adapter for the recyclerview to the newly created adapter
             mBeverageRecyclerView.setAdapter(mBeverageAdapter);
+            */
+
+            setupAdapter();
         } else {
             //adapter already exists, so just call the notify data set changed method to update
             mBeverageAdapter.notifyDataSetChanged();
         }
     }
 
+    // Method to set up the adapter for the recycler view
+    private void setupAdapter(){
+        //Check to see if the gragment has been added. In other words is the thread done.
+        if (isAdded()){
+            //Get a reference to the BeverageColection
+            BeverageCollection beverageCollection = BeverageCollection.get(getActivity());
+            //Create a new adapter to the beverage list
+            mBeverageAdapter = new BeverageAdapter(beverageCollection.getBeverages());
+            //Set the adapter on the recycler view.
+            mBeverageRecyclerView.setAdapter(mBeverageAdapter);
+        }
+    }
     //Private class that is required to get a recyclerview working
     private class BeverageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -161,13 +176,25 @@ public class BeverageListFragment extends Fragment {
             return mBeverages.size();
         }
     }
+
+    //Private Class to do the networking in a separate thread
     private class FetchBeveragesTask extends AsyncTask<Void,View, List<Beverage>>{
         @Override
         protected List<Beverage> doInBackground(Void... params) {
             Log.d(TAG, "about to return new BeverageFetcher().fetchBeverages();");
+            //Create a new BeverageFetcher class and call the fetchBeverages method.
             return new BeverageFetcher().fetchBeverages();
         }
 
-
+        @Override
+        //Method that will automaticlly be called when the code doInBackground is done.
+        protected void onPostExecute(List<Beverage> beverages) {
+            //Get a reference to the BeverageCollection
+            BeverageCollection beverageCollection = BeverageCollection.get(getActivity());
+            //Use the setter setBevaragecollection to set the beverage to the passed beverages
+            beverageCollection.setBeverageCollection(beverages);
+            //Set up the adapter for the recycler view from the data source.
+            setupAdapter();
+        }
     }
 }
