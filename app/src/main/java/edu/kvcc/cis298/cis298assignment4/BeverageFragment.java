@@ -70,7 +70,6 @@ public class BeverageFragment extends Fragment {
         String beverageId = getArguments().getString(ARG_BEVERAGE_ID);
         //use the id to get the beverage from the singleton
         mBeverage = BeverageCollection.get(getActivity()).getBeverage(beverageId);
-        //emailNames = getNameEmailDetails();
     }
 
     @Override
@@ -81,9 +80,7 @@ public class BeverageFragment extends Fragment {
         if (requestCode == REQUEST_CONTACT && data !=null){
 
             Uri contactUri = data.getData();
-            String [] queryFields = new String [] {
-                    ContactsContract.Contacts.DISPLAY_NAME
-            };
+
             ContentResolver cr = getActivity().getContentResolver();
             Cursor c = cr.query(contactUri, null, null, null, null);
             try {
@@ -103,45 +100,15 @@ public class BeverageFragment extends Fragment {
                 while (cur1.moveToNext()) {
                     mEmailString = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                     Log.e("Email", mEmailString);
-
                 }
                 cur1.close();
-
-
-
-
             }finally {
                 c.close();
             }
         }
     }
 
-    public ArrayList<String> getNameEmailDetails(){
-        ArrayList<String> names = new ArrayList<String>();
-        ContentResolver cr = getActivity().getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
-        if (cur.getCount() > 0) {
-            while (cur.moveToNext()) {
-                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-                Cursor cur1 = cr.query(
-                        ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
-                        new String[]{id}, null);
-                while (cur1.moveToNext()) {
-                    //to get the contact names
-                    String name=cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                    Log.e("Name :", name);
-                    String email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                    Log.e("Email", email);
-                    if(email!=null){
-                        names.add(name);
-                    }
-                }
-                cur1.close();
-            }
-        }
-        return names;
-    }
+
 
     @Nullable
     @Override
@@ -268,13 +235,17 @@ public class BeverageFragment extends Fragment {
         mSendDetailsButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, getBeverageReport());
-                i.putExtra(Intent.EXTRA_SUBJECT, "Beverage App Item Information");
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                String [] TO = {mEmailString};  // Must be in an array form for the Intent
+                emailIntent.setData(Uri.parse("mailto:"));
+                emailIntent.setType("text/plain");
 
-                i = Intent.createChooser(i,"Send Beverage Data via");
-                startActivity(i);
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, getBeverageReport());
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Beverage App Item Information");
+
+                emailIntent = Intent.createChooser(emailIntent,"Send Beverage Data via");
+                startActivity(emailIntent);
             }
         });
 
