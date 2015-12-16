@@ -52,6 +52,7 @@ public class BeverageCollection {
         return mBeverages;
     }
 
+    //Method to get the beverage out based on ID
     public Beverage getBeverage(String Id) {
         for (Beverage beverage : mBeverages) {
             if (beverage.getId().equals(Id)) {

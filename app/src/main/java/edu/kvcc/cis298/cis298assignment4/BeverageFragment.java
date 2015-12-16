@@ -74,36 +74,45 @@ public class BeverageFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        //Check to see if the result code is ok.
         if (resultCode != Activity.RESULT_OK){
             return;
         }
+        //Check to see that there is data
         if (requestCode == REQUEST_CONTACT && data !=null){
 
+            //Set a URI, which is a pointer to the data that was returned.
             Uri contactUri = data.getData();
 
+            //Create a new cursor.
             ContentResolver cr = getActivity().getContentResolver();
             Cursor c = cr.query(contactUri, null, null, null, null);
-            try {
+            try {//If the cursor is empty return
                 if (c.getCount() == 0){
                     return;
                 }
-                c.moveToFirst();
+                c.moveToFirst(); // Make sure we are at the beginign
+
+                //Get the name of the contact and place on the ContactButton.
                 mContactName = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 mContactButton.setText(mContactName);
-                ////////////////////////////////////////////////////////////////////////////////////////
 
+                //create a sting to hold the id.
                 String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+                //Create a cursor to get the email address and place in the string.
                 Cursor cur1 = cr.query(
                         ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                         ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
                         new String[]{id}, null);
                 while (cur1.moveToNext()) {
+                    //pull the email address out of the string;
                     mEmailString = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                     Log.e("Email", mEmailString);
                 }
-                cur1.close();
+                cur1.close(); //close the cursor to prevent memory leaks.
             }finally {
-                c.close();
+                c.close();//close the cursor to prevent memory leaks.
             }
         }
     }
@@ -255,16 +264,17 @@ public class BeverageFragment extends Fragment {
 
     }
 
-    private String getBeverageReport(){
-        if (mContactName == null){
+    private String getBeverageReport(){ //Create the email body report.
+        if (mContactName == null){//When no contact name place generic greeting.
             mContactName = "Hi there";
         }
         String isActiveString;
-        if (mBeverage.isActive()){
+        if (mBeverage.isActive()){//Parse out if the beverage is active and place appropreat message
             isActiveString = "Currently Active";
         }else {
             isActiveString = "Currently Inactive";
         }
+        //Create the report into one string.
         String report =  mEmailString + ",\n\n" + mContactName +",\n\n" + "Please Review the Following Beverage.\n\n" + mBeverage.getId()+ "\n"
                 + mBeverage.getName() + "\n" + mBeverage.getPack() + "\n" + mBeverage.getPrice() + "\n" + isActiveString;
 

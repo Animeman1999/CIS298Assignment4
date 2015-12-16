@@ -2,7 +2,7 @@
 
 ## Author
 
-
+Jeffrey Martin
 
 ## Description
 
@@ -69,11 +69,12 @@ Setup a SQLite database to maintain the information for the Beverages. When the 
 The application must do all of the above work to get the extra credit. In order to satisfy the web service grading part of the assignment, the application must either load the Beverage data from the web service when the application starts up (no database), or load the Beverage data when the database is created (with database). If there is no web service functionality for one of those two features, then you can not get any points for that section of grading.
 
 ## Outside Resources Used
-
-
+stackoverflow.com
+tutorialspoint.com
+developer.android.com
 
 ## Known Problems, Issues, And/Or Errors in the Program
-
+When email is sent to outlook, outlook will strip out line returns, from the body text, if the settings have not been changed by user.  All other communication apps seem to work.
 
 
 # Original Assignment README
