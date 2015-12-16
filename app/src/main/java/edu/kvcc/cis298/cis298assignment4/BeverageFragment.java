@@ -1,7 +1,11 @@
 package edu.kvcc.cis298.cis298assignment4;
 
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
@@ -10,6 +14,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +22,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
+import java.util.ArrayList;
 
 /**
  * Created by David Barnes on 11/3/2015.
@@ -36,6 +43,9 @@ public class BeverageFragment extends Fragment {
     private Button mSendDetailsButton;
     private static final int REQUEST_CONTACT = 1;  //constant request code needed when getting the result of the select contact intent.
     private String mContactName;
+    private String mEmailString;
+    ArrayList<String> emailNames = new ArrayList<String>();
+
 
     //Private var for storing the beverage that will be displayed with this fragment
     private Beverage mBeverage;
@@ -60,6 +70,77 @@ public class BeverageFragment extends Fragment {
         String beverageId = getArguments().getString(ARG_BEVERAGE_ID);
         //use the id to get the beverage from the singleton
         mBeverage = BeverageCollection.get(getActivity()).getBeverage(beverageId);
+        //emailNames = getNameEmailDetails();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
+        if (requestCode == REQUEST_CONTACT && data !=null){
+
+            Uri contactUri = data.getData();
+            String [] queryFields = new String [] {
+                    ContactsContract.Contacts.DISPLAY_NAME
+            };
+            ContentResolver cr = getActivity().getContentResolver();
+            Cursor c = cr.query(contactUri, null, null, null, null);
+            try {
+                if (c.getCount() == 0){
+                    return;
+                }
+                c.moveToFirst();
+                mContactName = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                mContactButton.setText(mContactName);
+                ////////////////////////////////////////////////////////////////////////////////////////
+
+                String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+                Cursor cur1 = cr.query(
+                        ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                        new String[]{id}, null);
+                while (cur1.moveToNext()) {
+                    mEmailString = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    Log.e("Email", mEmailString);
+
+                }
+                cur1.close();
+
+
+
+
+            }finally {
+                c.close();
+            }
+        }
+    }
+
+    public ArrayList<String> getNameEmailDetails(){
+        ArrayList<String> names = new ArrayList<String>();
+        ContentResolver cr = getActivity().getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
+        if (cur.getCount() > 0) {
+            while (cur.moveToNext()) {
+                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                Cursor cur1 = cr.query(
+                        ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                        new String[]{id}, null);
+                while (cur1.moveToNext()) {
+                    //to get the contact names
+                    String name=cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    Log.e("Name :", name);
+                    String email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    Log.e("Email", email);
+                    if(email!=null){
+                        names.add(name);
+                    }
+                }
+                cur1.close();
+            }
+        }
+        return names;
     }
 
     @Nullable
@@ -182,9 +263,9 @@ public class BeverageFragment extends Fragment {
             mContactButton.setEnabled(false);
         }
 
-        mContactButton = (Button) view.findViewById(R.id.send_beverage_details);
+        mSendDetailsButton = (Button) view.findViewById(R.id.send_beverage_details);
 
-        mContactButton.setOnClickListener(new View.OnClickListener(){
+        mSendDetailsButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_SEND);
@@ -204,14 +285,16 @@ public class BeverageFragment extends Fragment {
     }
 
     private String getBeverageReport(){
-        String contact = "How do  you get the name.\n\n";
+        if (mContactName == null){
+            mContactName = "Hi there";
+        }
         String isActiveString;
         if (mBeverage.isActive()){
             isActiveString = "Currently Active";
         }else {
             isActiveString = "Currently Inactive";
         }
-        String report =  contact + "Please Review the Following Beverage.\n\n" + mBeverage.getId()+ "\n"
+        String report =  mEmailString + ",\n\n" + mContactName +",\n\n" + "Please Review the Following Beverage.\n\n" + mBeverage.getId()+ "\n"
                 + mBeverage.getName() + "\n" + mBeverage.getPack() + "\n" + mBeverage.getPrice() + "\n" + isActiveString;
 
         return report;
